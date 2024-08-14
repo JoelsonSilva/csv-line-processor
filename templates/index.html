@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PROCESSO DE LOJA</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: #333;
+            color: white;
+            padding: 1em;
+            text-align: center;
+        }
+
+        form {
+            margin: 20px 0;
+        }
+
+        button {
+            background-color: #4caf50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .container {
+            margin: 20px;
+        }
+
+        h2 {
+            color: #333;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        li {
+            margin: 10px 0;
+            padding: 15px;
+            background-color: white;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 5px;
+            position: relative;
+        }
+
+        .sombra-vermelha {
+            box-shadow: 0 0 5px red;
+        }
+
+        .repetida {
+            color: blue;
+        }
+
+        .finalizada {
+            color: green;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>PROCESSO DE LOJA</h1>
+    </header>
+    
+    <div class="container">
+        <form method="POST" enctype="multipart/form-data">
+            <label for="csv_file">Abrir arquivo CSV:</label>
+            <input type="file" id="csv_file" name="csv_file" accept=".csv">
+            <button type="submit">BUSCAR</button>
+        </form>
+
+        {% if informacoes_csv and (informacoes_csv['linhas_em_execucao'] or informacoes_csv['linhas_finalizadas']) %}
+            <h2>Linhas que ficaram em Execução:</h2>
+            <ul>
+                {% for linha in informacoes_csv['linhas_em_execucao'] %}
+                    {% set loja_finalizada = linha['lojas'] in informacoes_csv['lojas_finalizadas_set'] %}
+                    <li {% if loja_finalizada %}class="finalizada"{% else %}class="sombra-vermelha"{% endif %}>
+                        <strong>Lojas:</strong> {{ linha['lojas'] }}<br>
+                        <strong>Nome:</strong> {{ linha['nome'] }}<br>
+                        {% if linha['lojas'] in informacoes_csv['lojas_repetidas'] %}
+                            <span class="repetida">Repetida</span>
+                        {% endif %}
+                    </li>
+                {% endfor %}
+            </ul>
+
+            <h2>Linhas Finalizadas com Sucesso:</h2>
+            <ul>
+                {% for linha in informacoes_csv['linhas_finalizadas'] %}
+                    <li class="finalizada">
+                        <strong>Lojas:</strong> {{ linha['lojas'] }}<br>
+                        <strong>Nome:</strong> {{ linha['nome'] }}<br>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    </div>
+</body>
+</html>
